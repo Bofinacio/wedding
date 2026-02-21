@@ -12,6 +12,37 @@ function App() {
   const iban = 'ES9321000863290200953949'
   const formattedIban = 'ES93 2100 0863 2902 0095 3949'
 
+  const showCopied = () => {
+    setCopyStatus('copied')
+    window.setTimeout(() => setCopyStatus('idle'), 2200)
+  }
+
+  const copyIbanToClipboard = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(iban)
+        showCopied()
+        return
+      }
+    } catch (error) {
+      // Fall through to legacy method.
+    }
+
+    const textarea = document.createElement('textarea')
+    textarea.value = iban
+    textarea.setAttribute('readonly', 'true')
+    textarea.style.position = 'absolute'
+    textarea.style.left = '-9999px'
+    document.body.appendChild(textarea)
+    textarea.select()
+    const successful = document.execCommand('copy')
+    document.body.removeChild(textarea)
+
+    if (successful) {
+      showCopied()
+    }
+  }
+
   useEffect(() => {
     const targetTimeZone = 'Europe/Madrid'
     const targetParts = {
@@ -202,12 +233,7 @@ function App() {
             <button
               className="copy-button"
               type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(iban).then(() => {
-                  setCopyStatus('copied')
-                  window.setTimeout(() => setCopyStatus('idle'), 2200)
-                })
-              }}
+              onClick={copyIbanToClipboard}
               aria-label="Copiar IBAN"
             >
               <span className="copy-status" aria-live="polite">
