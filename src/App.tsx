@@ -18,15 +18,11 @@ function App() {
   }
 
   const copyIbanToClipboard = async () => {
-    try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(iban)
         showCopied()
         return
       }
-    } catch (error) {
-      // Fall through to legacy method.
-    }
 
     const textarea = document.createElement('textarea')
     textarea.value = iban
